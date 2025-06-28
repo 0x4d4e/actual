@@ -37,16 +37,6 @@ import { View } from '@actual-app/components/view';
 import { css } from '@emotion/css';
 
 import {
-  closeAndDownloadBudget,
-  closeAndLoadBudget,
-  createBudget,
-  downloadBudget,
-  loadAllFiles,
-  loadBudget,
-} from 'loot-core/client/budgets/budgetsSlice';
-import { pushModal } from 'loot-core/client/modals/modalsSlice';
-import { getUserData } from 'loot-core/client/users/usersSlice';
-import {
   isElectron,
   isNonProductionEnvironment,
 } from 'loot-core/shared/environment';
@@ -58,10 +48,20 @@ import {
   type SyncedLocalFile,
 } from 'loot-core/types/file';
 
-import { useInitialMount } from '../../hooks/useInitialMount';
-import { useMetadataPref } from '../../hooks/useMetadataPref';
-import { useSelector, useDispatch } from '../../redux';
-import { useMultiuserEnabled } from '../ServerContext';
+import {
+  closeAndDownloadBudget,
+  closeAndLoadBudget,
+  createBudget,
+  downloadBudget,
+  loadAllFiles,
+  loadBudget,
+} from '@desktop-client/budgets/budgetsSlice';
+import { useMultiuserEnabled } from '@desktop-client/components/ServerContext';
+import { useInitialMount } from '@desktop-client/hooks/useInitialMount';
+import { useMetadataPref } from '@desktop-client/hooks/useMetadataPref';
+import { pushModal } from '@desktop-client/modals/modalsSlice';
+import { useSelector, useDispatch } from '@desktop-client/redux';
+import { getUserData } from '@desktop-client/users/usersSlice';
 
 function getFileDescription(file: File, t: (key: string) => string) {
   if (file.state === 'unknown') {
@@ -129,6 +129,8 @@ function BudgetFileMenuButton({
   onDelete,
   onDuplicate,
 }: BudgetFileMenuButtonProps) {
+  const { t } = useTranslation();
+
   const triggerRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -137,7 +139,7 @@ function BudgetFileMenuButton({
       <Button
         ref={triggerRef}
         variant="bare"
-        aria-label="Menu"
+        aria-label={t('Menu')}
         onPress={() => {
           setMenuOpen(true);
         }}
@@ -182,18 +184,18 @@ function BudgetFileState({ file, currentUserId }: BudgetFileStateProps) {
         return 'Server';
       }
 
-      return userFound?.displayName ?? userFound?.userName ?? 'Unassigned';
+      return userFound?.displayName ?? userFound?.userName ?? t('Unassigned');
     }
 
-    return 'Unknown';
-  }, [file]);
+    return t('Unknown');
+  }, [file, t]);
 
   switch (file.state) {
     case 'unknown':
       Icon = SvgCloudUnknown;
       status = t('Network unavailable');
       color = theme.buttonNormalDisabledText;
-      ownerName = 'Unknown';
+      ownerName = t('Unknown');
       break;
     case 'remote':
       Icon = SvgCloudDownload;
@@ -202,14 +204,14 @@ function BudgetFileState({ file, currentUserId }: BudgetFileStateProps) {
       break;
     case 'local':
       Icon = SvgFileDouble;
-      status = 'Local';
-      ownerName = 'You';
+      status = t('Local');
+      ownerName = t('You');
       break;
     case 'broken':
       ownerName = 'unknown';
       Icon = SvgFileDouble;
       status = t('Local');
-      ownerName = 'You';
+      ownerName = t('You');
       break;
     default:
       Icon = SvgCloudCheck;
@@ -444,6 +446,8 @@ type RefreshButtonProps = {
 };
 
 function RefreshButton({ style, onRefresh }: RefreshButtonProps) {
+  const { t } = useTranslation();
+
   const [loading, setLoading] = useState(false);
 
   async function _onRefresh() {
@@ -457,7 +461,7 @@ function RefreshButton({ style, onRefresh }: RefreshButtonProps) {
   return (
     <Button
       variant="bare"
-      aria-label="Refresh"
+      aria-label={t('Refresh')}
       style={{ padding: 10, ...style }}
       onPress={_onRefresh}
     >
@@ -724,6 +728,8 @@ type UserAccessForFileProps = {
 };
 
 function UserAccessForFile({ fileId, currentUserId }: UserAccessForFileProps) {
+  const { t } = useTranslation();
+
   const allFiles = useSelector(state => state.budgets.allFiles || []);
   const remoteFiles = allFiles.filter(
     f => f.state === 'remote' || f.state === 'synced' || f.state === 'detached',
@@ -736,9 +742,9 @@ function UserAccessForFile({ fileId, currentUserId }: UserAccessForFileProps) {
 
   const sortedUsersAccess = [...usersAccess].sort((a, b) => {
     const textA =
-      a.userId === currentUserId ? 'You' : (a.displayName ?? a.userName);
+      a.userId === currentUserId ? t('You') : (a.displayName ?? a.userName);
     const textB =
-      b.userId === currentUserId ? 'You' : (b.displayName ?? b.userName);
+      b.userId === currentUserId ? t('You') : (b.displayName ?? b.userName);
     return textA.localeCompare(textB);
   });
 
@@ -794,7 +800,7 @@ function UserAccessForFile({ fileId, currentUserId }: UserAccessForFileProps) {
                           }}
                         >
                           {user.userId === currentUserId
-                            ? 'You'
+                            ? t('You')
                             : (user.displayName ?? user.userName)}
                         </View>
                       </View>

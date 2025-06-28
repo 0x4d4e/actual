@@ -20,20 +20,20 @@ import { styles } from '@actual-app/components/styles';
 import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
 
-import { type Modal as ModalType } from 'loot-core/client/modals/modalsSlice';
 import { type AccountEntity } from 'loot-core/types/models';
 
-import { useAccount } from '../../hooks/useAccount';
-import { useAccounts } from '../../hooks/useAccounts';
-import { useNotes } from '../../hooks/useNotes';
 import {
   Modal,
   ModalCloseButton,
   ModalHeader,
   ModalTitle,
-} from '../common/Modal';
-import { Notes } from '../Notes';
-import { validateAccountName } from '../util/accountValidation';
+} from '@desktop-client/components/common/Modal';
+import { Notes } from '@desktop-client/components/Notes';
+import { validateAccountName } from '@desktop-client/components/util/accountValidation';
+import { useAccount } from '@desktop-client/hooks/useAccount';
+import { useAccounts } from '@desktop-client/hooks/useAccounts';
+import { useNotes } from '@desktop-client/hooks/useNotes';
+import { type Modal as ModalType } from '@desktop-client/modals/modalsSlice';
 
 type AccountMenuModalProps = Extract<
   ModalType,
@@ -208,6 +208,7 @@ function AdditionalAccountMenu({
   onClose,
   onReopen,
 }: AdditionalAccountMenuProps) {
+  const { t } = useTranslation();
   const triggerRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const itemStyle: CSSProperties = {
@@ -225,7 +226,7 @@ function AdditionalAccountMenu({
       <Button
         ref={triggerRef}
         variant="bare"
-        aria-label="Menu"
+        aria-label={t('Menu')}
         onPress={() => {
           setMenuOpen(true);
         }}
@@ -247,13 +248,13 @@ function AdditionalAccountMenu({
               account.closed
                 ? {
                     name: 'reopen',
-                    text: 'Reopen account',
+                    text: t('Reopen account'),
                     icon: SvgLockOpen,
                     iconSize: 15,
                   }
                 : {
                     name: 'close',
-                    text: 'Close account',
+                    text: t('Close account'),
                     icon: SvgClose,
                     iconSize: 15,
                   },

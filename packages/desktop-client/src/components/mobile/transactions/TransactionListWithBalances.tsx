@@ -11,14 +11,24 @@ import {
   type TransactionEntity,
 } from 'loot-core/types/models';
 
-import { SelectedProvider, useSelected } from '../../../hooks/useSelected';
-import { Search } from '../../common/Search';
-import type { Binding, SheetNames, SheetFields } from '../../spreadsheet';
-import { CellValue, CellValueText } from '../../spreadsheet/CellValue';
-import { useSheetValue } from '../../spreadsheet/useSheetValue';
-import { PullToRefresh } from '../PullToRefresh';
-
 import { TransactionList } from './TransactionList';
+
+import { Search } from '@desktop-client/components/common/Search';
+import { PullToRefresh } from '@desktop-client/components/mobile/PullToRefresh';
+import {
+  CellValue,
+  CellValueText,
+} from '@desktop-client/components/spreadsheet/CellValue';
+import {
+  SelectedProvider,
+  useSelected,
+} from '@desktop-client/hooks/useSelected';
+import { useSheetValue } from '@desktop-client/hooks/useSheetValue';
+import type {
+  Binding,
+  SheetNames,
+  SheetFields,
+} from '@desktop-client/spreadsheet';
 
 type TransactionSearchInputProps = {
   placeholder: string;
@@ -50,7 +60,7 @@ function TransactionSearchInput({
         placeholder={placeholder}
         width="100%"
         height={styles.mobileMinHeight}
-        inputStyle={{
+        style={{
           backgroundColor: theme.tableBackground,
           borderColor: theme.formInputBorder,
         }}
@@ -65,6 +75,7 @@ type TransactionListWithBalancesProps = {
   balance:
     | Binding<'account', 'onbudget-accounts-balance'>
     | Binding<'account', 'offbudget-accounts-balance'>
+    | Binding<'account', 'closed-accounts-balance'>
     | Binding<SheetNames, 'uncategorized-balance'>
     | Binding<'category', 'balance'>
     | Binding<'account', 'balance'>

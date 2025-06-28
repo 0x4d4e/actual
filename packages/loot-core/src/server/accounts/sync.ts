@@ -20,7 +20,7 @@ import {
   SimpleFinBatchSyncResponse,
   TransactionEntity,
 } from '../../types/models';
-import { runQuery } from '../aql';
+import { aqlQuery } from '../aql';
 import * as db from '../db';
 import { runMutator } from '../mutators';
 import { post } from '../post';
@@ -66,16 +66,16 @@ function getAccountBalance(account) {
   }
 }
 
-async function updateAccountBalance(id, balance) {
+async function updateAccountBalance(id: AccountEntity['id'], balance: number) {
   await db.runQuery('UPDATE accounts SET balance_current = ? WHERE id = ?', [
-    amountToInteger(balance),
+    balance,
     id,
   ]);
 }
 
 async function getAccountOldestTransaction(id): Promise<TransactionEntity> {
   return (
-    await runQuery(
+    await aqlQuery(
       q('transactions')
         .filter({
           account: id,
@@ -373,17 +373,17 @@ async function normalizeBankSyncTransactions(transactions, acctId) {
   const payeesToCreate = new Map();
 
   const [customMappingsRaw, importPending, importNotes] = await Promise.all([
-    runQuery(
+    aqlQuery(
       q('preferences')
         .filter({ id: `custom-sync-mappings-${acctId}` })
         .select('value'),
     ).then(data => data?.data?.[0]?.value),
-    runQuery(
+    aqlQuery(
       q('preferences')
         .filter({ id: `sync-import-pending-${acctId}` })
         .select('value'),
     ).then(data => String(data?.data?.[0]?.value ?? 'true') === 'true'),
-    runQuery(
+    aqlQuery(
       q('preferences')
         .filter({ id: `sync-import-notes-${acctId}` })
         .select('value'),
@@ -618,7 +618,7 @@ export async function matchTransactions(
 ) {
   console.log('Performing transaction reconciliation matching');
 
-  const reimportDeleted = await runQuery(
+  const reimportDeleted = await aqlQuery(
     q('preferences')
       .filter({ id: `sync-reimport-deleted-${acctId}` })
       .select('value'),
@@ -879,12 +879,17 @@ async function processBankSyncDownload(
   // that account sync sources can give two different transaction IDs even though it's the same transaction.
   const useStrictIdChecking = !acctRow.account_sync_source;
 
+  /** Starting balance is actually the current balance of the account. */
+  const {
+    transactions: originalTransactions,
+    startingBalance: currentBalance,
+  } = download;
+
   if (initialSync) {
     const { transactions } = download;
-    let balanceToUse = download.startingBalance;
+    let balanceToUse = currentBalance;
 
     if (acctRow.account_sync_source === 'simpleFin') {
-      const currentBalance = download.startingBalance;
       const previousBalance = transactions.reduce((total, trans) => {
         return (
           total - parseInt(trans.transactionAmount.amount.replace('.', ''))
@@ -935,8 +940,6 @@ async function processBankSyncDownload(
     });
   }
 
-  const { transactions: originalTransactions, accountBalance } = download;
-
   if (originalTransactions.length === 0) {
     return { added: [], updated: [] };
   }
@@ -954,7 +957,8 @@ async function processBankSyncDownload(
       useStrictIdChecking,
     );
 
-    if (accountBalance) await updateAccountBalance(id, accountBalance);
+    /** Starting balance is actually the current balance of the account. */
+    if (currentBalance) await updateAccountBalance(id, currentBalance);
 
     return result;
   });

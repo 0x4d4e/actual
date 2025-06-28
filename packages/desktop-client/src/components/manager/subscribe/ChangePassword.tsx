@@ -9,10 +9,10 @@ import { View } from '@actual-app/components/view';
 
 import { send } from 'loot-core/platform/client/fetch';
 
-import { useNavigate } from '../../../hooks/useNavigate';
-
 import { Title } from './common';
 import { ConfirmPasswordForm } from './ConfirmPasswordForm';
+
+import { useNavigate } from '@desktop-client/hooks/useNavigate';
 
 export function ChangePassword() {
   const { t } = useTranslation();
@@ -24,13 +24,13 @@ export function ChangePassword() {
   function getErrorMessage(error) {
     switch (error) {
       case 'invalid-password':
-        return 'Password cannot be empty';
+        return t('Password cannot be empty');
       case 'password-match':
-        return 'Passwords do not match';
+        return t('Passwords do not match');
       case 'network-failure':
-        return 'Unable to contact the server';
+        return t('Unable to contact the server');
       default:
-        return 'Internal error';
+        return t('Internal error');
     }
   }
 

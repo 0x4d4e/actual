@@ -17,16 +17,16 @@ import { css } from '@emotion/css';
 
 import * as monthUtils from 'loot-core/shared/months';
 
-import { useLocale } from '../../../../hooks/useLocale';
-import { useUndo } from '../../../../hooks/useUndo';
-import { NotesButton } from '../../../NotesButton';
-import { NamespaceContext } from '../../../spreadsheet/NamespaceContext';
-import { useTrackingBudget } from '../TrackingBudgetContext';
-
 import { BudgetMonthMenu } from './BudgetMonthMenu';
 import { ExpenseTotal } from './ExpenseTotal';
 import { IncomeTotal } from './IncomeTotal';
 import { Saved } from './Saved';
+
+import { useTrackingBudget } from '@desktop-client/components/budget/tracking/TrackingBudgetContext';
+import { NotesButton } from '@desktop-client/components/NotesButton';
+import { useLocale } from '@desktop-client/hooks/useLocale';
+import { SheetNameProvider } from '@desktop-client/hooks/useSheetName';
+import { useUndo } from '@desktop-client/hooks/useUndo';
 
 type BudgetSummaryProps = {
   month: string;
@@ -84,7 +84,7 @@ export function BudgetSummary({ month }: BudgetSummaryProps) {
         },
       }}
     >
-      <NamespaceContext.Provider value={monthUtils.sheetForMonth(month)}>
+      <SheetNameProvider name={monthUtils.sheetForMonth(month)}>
         <View
           style={{
             padding: '0 13px',
@@ -265,7 +265,7 @@ export function BudgetSummary({ month }: BudgetSummaryProps) {
             style={{ marginTop: 13, marginBottom: 20 }}
           />
         )}
-      </NamespaceContext.Provider>
+      </SheetNameProvider>
     </View>
   );
 }

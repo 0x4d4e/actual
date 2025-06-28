@@ -29,18 +29,20 @@ function sgml2Xml(sgml) {
     .replace(/<\/<added>(\w+?)>(<\/\1>)?/g, '</$1>'); // Remove duplicate end-tags
 }
 
-function html2Plain(value) {
+export function html2Plain(value) {
   return value
-    ?.replace(/&amp;/g, '&') // ampersands
-    .replace(/&#038;/g, '&') // other ampersands
-    .replace(/&lt;/g, '<') // lessthan
+    ?.replace(/&lt;/g, '<') // lessthan
     .replace(/&gt;/g, '>') // greaterthan
     .replace(/&#39;/g, "'") // eslint-disable-line rulesdir/typography
-    .replace(/&quot;/g, '"'); // eslint-disable-line rulesdir/typography
+    .replace(/&quot;/g, '"') // eslint-disable-line rulesdir/typography
+    .replace(/(&amp;|&#038;)/g, '&'); // ampersands
 }
 
 async function parseXml(content) {
-  return await parseStringPromise(content, { explicitArray: false });
+  return await parseStringPromise(content, {
+    explicitArray: false,
+    trim: true,
+  });
 }
 
 function getStmtTrn(data) {
@@ -123,7 +125,7 @@ function mapOfxTransaction(stmtTrn): OFXTransaction {
 
 export async function ofx2json(ofx: string): Promise<OFXParseResult> {
   // firstly, split into the header attributes and the footer sgml
-  const contents = ofx.split('<OFX>', 2);
+  const contents = ofx.split(/<OFX\s?>/, 2);
 
   // firstly, parse the headers
   const headerString = contents[0].split(/\r?\n/);

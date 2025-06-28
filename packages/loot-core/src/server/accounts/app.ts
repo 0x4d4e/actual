@@ -15,6 +15,8 @@ import {
   TransactionEntity,
   SyncServerSimpleFinAccount,
   SyncServerPluggyAiAccount,
+  type GoCardlessToken,
+  ImportTransactionEntity,
 } from '../../types/models';
 import { createApp } from '../app';
 import * as db from '../db';
@@ -550,14 +552,19 @@ async function pollGoCardlessWebToken({
   stopPolling = false;
 
   async function getData(
-    cb: (error: string | null, data?: unknown | undefined) => void,
+    cb: (
+      data:
+        | { status: 'timeout' }
+        | { status: 'unknown'; message?: string }
+        | { status: 'success'; data: GoCardlessToken },
+    ) => void,
   ) {
     if (stopPolling) {
       return;
     }
 
     if (Date.now() - startTime >= 1000 * 60 * 10) {
-      cb('timeout');
+      cb({ status: 'timeout' });
       return;
     }
 
@@ -577,10 +584,11 @@ async function pollGoCardlessWebToken({
     );
 
     if (data) {
-      if (data.error) {
-        cb('unknown');
+      if (data.error_code) {
+        console.error('Failed linking gocardless account:', data);
+        cb({ status: 'unknown', message: data.error_type });
       } else {
-        cb(null, data);
+        cb({ status: 'success', data });
       }
     } else {
       setTimeout(() => getData(cb), 3000);
@@ -588,12 +596,21 @@ async function pollGoCardlessWebToken({
   }
 
   return new Promise(resolve => {
-    getData((error, data) => {
-      if (error) {
-        resolve({ error });
-      } else {
-        resolve({ data });
+    getData(data => {
+      if (data.status === 'success') {
+        resolve({ data: data.data });
+        return;
       }
+
+      if (data.status === 'timeout') {
+        resolve({ error: data.status });
+        return;
+      }
+
+      resolve({
+        error: data.status,
+        message: data.message,
+      });
     });
   });
 }
@@ -832,13 +849,22 @@ function handleSyncError(
   if (err instanceof BankSyncError || (err as any)?.type === 'BankSyncError') {
     const error = err as BankSyncError;
 
-    return {
+    const syncError = {
       type: 'SyncError',
       accountId: acct.id,
       message: 'Failed syncing account “' + acct.name + '.”',
       category: error.category,
       code: error.code,
     };
+
+    if (error.category === 'RATE_LIMIT_EXCEEDED') {
+      return {
+        ...syncError,
+        message: `Failed syncing account ${acct.name}. Rate limit exceeded. Please try again later.`,
+      };
+    }
+
+    return syncError;
   }
 
   if (err instanceof PostError && err.reason !== 'internal') {
@@ -867,10 +893,8 @@ async function accountsBankSync({
 }: {
   ids: Array<AccountEntity['id']>;
 }): Promise<SyncResponseWithErrors> {
-  const [[, userId], [, userKey]] = await asyncStorage.multiGet([
-    'user-id',
-    'user-key',
-  ]);
+  const { 'user-id': userId, 'user-key': userKey } =
+    await asyncStorage.multiGet(['user-id', 'user-key']);
 
   const accounts = await db.runQuery<
     db.DbAccount & { bankId: db.DbBank['bank_id'] }
@@ -1051,7 +1075,7 @@ async function simpleFinBatchSync({
   return retVal;
 }
 
-type ImportTransactionsResult = bankSync.ReconcileTransactionsResult & {
+export type ImportTransactionsResult = bankSync.ReconcileTransactionsResult & {
   errors: Array<{
     message: string;
   }>;
@@ -1064,7 +1088,7 @@ async function importTransactions({
   opts,
 }: {
   accountId: AccountEntity['id'];
-  transactions: TransactionEntity[];
+  transactions: ImportTransactionEntity[];
   isPreview: boolean;
   opts?: {
     defaultCleared: boolean;

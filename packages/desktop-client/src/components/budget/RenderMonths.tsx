@@ -3,6 +3,7 @@ import React, {
   useContext,
   type CSSProperties,
   type ComponentType,
+  type JSX,
 } from 'react';
 
 import { theme } from '@actual-app/components/theme';
@@ -10,9 +11,9 @@ import { View } from '@actual-app/components/view';
 
 import * as monthUtils from 'loot-core/shared/months';
 
-import { NamespaceContext } from '../spreadsheet/NamespaceContext';
-
 import { MonthsContext } from './MonthsContext';
+
+import { SheetNameProvider } from '@desktop-client/hooks/useSheetName';
 
 type RenderMonthsProps = {
   component?: ComponentType<{ month: string; editing: boolean }>;
@@ -33,10 +34,7 @@ export function RenderMonths({
     const editing = editingMonth === month;
 
     return (
-      <NamespaceContext.Provider
-        key={index}
-        value={monthUtils.sheetForMonth(month)}
-      >
+      <SheetNameProvider key={index} name={monthUtils.sheetForMonth(month)}>
         <View
           style={{
             flex: 1,
@@ -46,7 +44,7 @@ export function RenderMonths({
         >
           <Component month={month} editing={editing} {...args} />
         </View>
-      </NamespaceContext.Provider>
+      </SheetNameProvider>
     );
   }) as unknown as JSX.Element;
 }

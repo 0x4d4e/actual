@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { useTranslation } from 'react-i18next';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Trans, useTranslation } from 'react-i18next';
+import { Routes, Route, useLocation } from 'react-router';
 
 import { Button } from '@actual-app/components/button';
 import { useResponsive } from '@actual-app/components/hooks/useResponsive';
@@ -19,20 +19,12 @@ import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
 import { css } from '@emotion/css';
 
-import { sync } from 'loot-core/client/app/appSlice';
-import * as Platform from 'loot-core/client/platform';
-import * as queries from 'loot-core/client/queries';
 import { listen } from 'loot-core/platform/client/fetch';
 import {
   isDevelopmentEnvironment,
   isElectron,
 } from 'loot-core/shared/environment';
-
-import { useGlobalPref } from '../hooks/useGlobalPref';
-import { useMetadataPref } from '../hooks/useMetadataPref';
-import { useNavigate } from '../hooks/useNavigate';
-import { useSyncedPref } from '../hooks/useSyncedPref';
-import { useDispatch } from '../redux';
+import * as Platform from 'loot-core/shared/platform';
 
 import { AccountSyncCheck } from './accounts/AccountSyncCheck';
 import { AnimatedRefresh } from './AnimatedRefresh';
@@ -42,11 +34,19 @@ import { HelpMenu } from './HelpMenu';
 import { LoggedInUser } from './LoggedInUser';
 import { useServerURL } from './ServerContext';
 import { useSidebar } from './sidebar/SidebarProvider';
-import { useSheetValue } from './spreadsheet/useSheetValue';
 import { ThemeSelector } from './ThemeSelector';
 
+import { sync } from '@desktop-client/app/appSlice';
+import { useGlobalPref } from '@desktop-client/hooks/useGlobalPref';
+import { useMetadataPref } from '@desktop-client/hooks/useMetadataPref';
+import { useNavigate } from '@desktop-client/hooks/useNavigate';
+import { useSheetValue } from '@desktop-client/hooks/useSheetValue';
+import { useSyncedPref } from '@desktop-client/hooks/useSyncedPref';
+import { useDispatch } from '@desktop-client/redux';
+import * as bindings from '@desktop-client/spreadsheet/bindings';
+
 function UncategorizedButton() {
-  const count: number | null = useSheetValue(queries.uncategorizedCount());
+  const count: number | null = useSheetValue(bindings.uncategorizedCount());
   if (count === null || count <= 0) {
     return null;
   }
@@ -60,7 +60,7 @@ function UncategorizedButton() {
         color: theme.errorText,
       }}
     >
-      {count} uncategorized {count === 1 ? 'transaction' : 'transactions'}
+      <Trans count={count}>{{ count }} uncategorized transactions</Trans>
     </Link>
   );
 }
@@ -70,6 +70,7 @@ type PrivacyButtonProps = {
 };
 
 function PrivacyButton({ style }: PrivacyButtonProps) {
+  const { t } = useTranslation();
   const [isPrivacyEnabledPref, setPrivacyEnabledPref] =
     useSyncedPref('isPrivacyEnabled');
   const isPrivacyEnabled = String(isPrivacyEnabledPref) === 'true';
@@ -91,7 +92,9 @@ function PrivacyButton({ style }: PrivacyButtonProps) {
   return (
     <Button
       variant="bare"
-      aria-label={`${isPrivacyEnabled ? 'Disable' : 'Enable'} privacy mode`}
+      aria-label={
+        isPrivacyEnabled ? t('Disable privacy mode') : t('Enable privacy mode')
+      }
       onPress={() => setPrivacyEnabledPref(String(!isPrivacyEnabled))}
       style={style}
     >
@@ -242,10 +245,10 @@ function SyncButton({ style, isMobile = false }: SyncButtonProps) {
       )}
       <Text style={isMobile ? { ...mobileTextStyle } : { marginLeft: 3 }}>
         {syncState === 'disabled'
-          ? 'Disabled'
+          ? t('Disabled')
           : syncState === 'offline'
-            ? 'Offline'
-            : 'Sync'}
+            ? t('Offline')
+            : t('Sync')}
       </Text>
     </Button>
   );
@@ -328,7 +331,7 @@ export function Titlebar({ style }: TitlebarProps) {
                   height={10}
                   style={{ marginRight: 5, color: 'currentColor' }}
                 />{' '}
-                {t('Back')}
+                <Trans>Back</Trans>
               </Button>
             ) : null
           }

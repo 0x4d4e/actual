@@ -10,19 +10,27 @@ import { Text } from '@actual-app/components/text';
 import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
 
-import {
-  type Modal as ModalType,
-  popModal,
-} from 'loot-core/client/modals/modalsSlice';
-import { addNotification } from 'loot-core/client/notifications/notificationsSlice';
-import { signOut } from 'loot-core/client/users/usersSlice';
 import { send } from 'loot-core/platform/client/fetch';
 import { PossibleRoles } from 'loot-core/shared/user';
 import { type NewUserEntity, type UserEntity } from 'loot-core/types/models';
 
-import { useDispatch } from '../../redux';
-import { Modal, ModalCloseButton, ModalHeader } from '../common/Modal';
-import { Checkbox, FormField, FormLabel } from '../forms';
+import {
+  Modal,
+  ModalCloseButton,
+  ModalHeader,
+} from '@desktop-client/components/common/Modal';
+import {
+  Checkbox,
+  FormField,
+  FormLabel,
+} from '@desktop-client/components/forms';
+import {
+  type Modal as ModalType,
+  popModal,
+} from '@desktop-client/modals/modalsSlice';
+import { addNotification } from '@desktop-client/notifications/notificationsSlice';
+import { useDispatch } from '@desktop-client/redux';
+import { signOut } from '@desktop-client/users/usersSlice';
 
 type User = UserEntity;
 type NewUser = NewUserEntity;
@@ -135,7 +143,7 @@ export function EditUserFinanceApp({
                 ? t('Edit user {{userName}}', {
                     userName: defaultUser.displayName ?? defaultUser.userName,
                   })
-                : 'Add user'
+                : t('Add user')
             }
             rightContent={<ModalCloseButton onPress={close} />}
           />
@@ -208,7 +216,7 @@ function EditUser({ defaultUser, onSave: originalOnSave }: EditUserProps) {
           <Input
             id="name-field"
             value={userName}
-            onChangeValue={text => setUserName(text)}
+            onChangeValue={setUserName}
             style={{
               borderColor: theme.buttonMenuBorder,
             }}
@@ -241,7 +249,7 @@ function EditUser({ defaultUser, onSave: originalOnSave }: EditUserProps) {
             onChange={() => setEnabled(!enabled)}
           />
           <label htmlFor="enabled-field" style={{ userSelect: 'none' }}>
-            Enabled
+            <Trans>Enabled</Trans>
           </label>
         </View>
       </Stack>
@@ -264,7 +272,7 @@ function EditUser({ defaultUser, onSave: originalOnSave }: EditUserProps) {
           <Input
             id="displayname-field"
             value={displayName}
-            onChangeValue={text => setDisplayName(text)}
+            onChangeValue={setDisplayName}
             placeholder={t('(Optional)')}
             style={{
               borderColor: theme.buttonMenuBorder,
@@ -297,7 +305,7 @@ function EditUser({ defaultUser, onSave: originalOnSave }: EditUserProps) {
       </Stack>
       <Stack direction="row" style={{ marginTop: 10, width: '100px' }}>
         <FormField style={{ flex: 1 }}>
-          <FormLabel title="Role" htmlFor="role-field" />
+          <FormLabel title={t('Role')} htmlFor="role-field" />
           <Select
             id="role-field"
             disabled={isOwner}
@@ -327,7 +335,7 @@ function EditUser({ defaultUser, onSave: originalOnSave }: EditUserProps) {
           <Trans>Cancel</Trans>
         </Button>
         <Button variant="primary" onPress={onSave}>
-          {isExistingUser ? 'Save' : 'Add'}
+          {isExistingUser ? t('Save') : t('Add')}
         </Button>
       </Stack>
     </>

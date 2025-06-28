@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Transfer split transfers are retained on child transactions 1`] = `
+exports[`Transfer > split transfers are retained on child transactions 1`] = `
 [
   {
     "account": "one",
@@ -53,9 +53,8 @@ exports[`Transfer split transfers are retained on child transactions 1`] = `
 ]
 `;
 
-exports[`Transfer split transfers are retained on child transactions 2`] = `
-"Snapshot Diff:
-- First value
+exports[`Transfer > split transfers are retained on child transactions 2`] = `
+"- First value
 + Second value
 
 @@ -8,11 +8,11 @@
@@ -73,9 +72,8 @@ exports[`Transfer split transfers are retained on child transactions 2`] = `
       "raw_synced_data": null,"
 `;
 
-exports[`Transfer split transfers are retained on child transactions 3`] = `
-"Snapshot Diff:
-- First value
+exports[`Transfer > split transfers are retained on child transactions 3`] = `
+"- First value
 + Second value
 
 @@ -22,10 +22,58 @@
@@ -139,7 +137,7 @@ exports[`Transfer split transfers are retained on child transactions 3`] = `
       "date": 20170101,"
 `;
 
-exports[`Transfer transfers are properly de-categorized 1`] = `
+exports[`Transfer > transfers are properly de-categorized 1`] = `
 [
   {
     "account": "one",
@@ -168,9 +166,8 @@ exports[`Transfer transfers are properly de-categorized 1`] = `
 ]
 `;
 
-exports[`Transfer transfers are properly de-categorized 2`] = `
-"Snapshot Diff:
-- First value
+exports[`Transfer > transfers are properly de-categorized 2`] = `
+"- First value
 + Second value
 
 @@ -9,18 +9,42 @@
@@ -222,9 +219,8 @@ exports[`Transfer transfers are properly de-categorized 2`] = `
   ]"
 `;
 
-exports[`Transfer transfers are properly de-categorized 3`] = `
-"Snapshot Diff:
-- First value
+exports[`Transfer > transfers are properly de-categorized 3`] = `
+"- First value
 + Second value
 
 @@ -1,32 +1,32 @@
@@ -265,7 +261,7 @@ exports[`Transfer transfers are properly de-categorized 3`] = `
       "error": null,"
 `;
 
-exports[`Transfer transfers are properly inserted/updated/deleted 1`] = `
+exports[`Transfer > transfers are properly inserted/updated/deleted 1`] = `
 [
   {
     "account": "one",
@@ -294,9 +290,8 @@ exports[`Transfer transfers are properly inserted/updated/deleted 1`] = `
 ]
 `;
 
-exports[`Transfer transfers are properly inserted/updated/deleted 2`] = `
-"Snapshot Diff:
-- First value
+exports[`Transfer > transfers are properly inserted/updated/deleted 2`] = `
+"- First value
 + Second value
 
 @@ -21,6 +21,54 @@
@@ -356,9 +351,8 @@ exports[`Transfer transfers are properly inserted/updated/deleted 2`] = `
   ]"
 `;
 
-exports[`Transfer transfers are properly inserted/updated/deleted 3`] = `
-"Snapshot Diff:
-- First value
+exports[`Transfer > transfers are properly inserted/updated/deleted 3`] = `
+"- First value
 + Second value
 
 @@ -2,73 +2,73 @@
@@ -458,9 +452,8 @@ exports[`Transfer transfers are properly inserted/updated/deleted 3`] = `
   ]"
 `;
 
-exports[`Transfer transfers are properly inserted/updated/deleted 4`] = `
-"Snapshot Diff:
-- First value
+exports[`Transfer > transfers are properly inserted/updated/deleted 4`] = `
+"- First value
 + Second value
 
 @@ -11,22 +11,22 @@
@@ -490,9 +483,8 @@ exports[`Transfer transfers are properly inserted/updated/deleted 4`] = `
       "error": null,"
 `;
 
-exports[`Transfer transfers are properly inserted/updated/deleted 5`] = `
-"Snapshot Diff:
-- First value
+exports[`Transfer > transfers are properly inserted/updated/deleted 5`] = `
+"- First value
 + Second value
 
 @@ -11,43 +11,19 @@
@@ -544,9 +536,8 @@ exports[`Transfer transfers are properly inserted/updated/deleted 5`] = `
       "category": null,"
 `;
 
-exports[`Transfer transfers are properly inserted/updated/deleted 6`] = `
-"Snapshot Diff:
-- First value
+exports[`Transfer > transfers are properly inserted/updated/deleted 6`] = `
+"- First value
 + Second value
 
 @@ -11,19 +11,43 @@
@@ -598,9 +589,8 @@ exports[`Transfer transfers are properly inserted/updated/deleted 6`] = `
       "category": null,"
 `;
 
-exports[`Transfer transfers are properly inserted/updated/deleted 7`] = `
-"Snapshot Diff:
-- First value
+exports[`Transfer > transfers are properly inserted/updated/deleted 7`] = `
+"- First value
 + Second value
 
 @@ -2,58 +2,10 @@

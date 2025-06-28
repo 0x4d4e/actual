@@ -1,6 +1,6 @@
 import React, { useState, type ReactNode } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router-dom';
+import { Trans } from 'react-i18next';
+import { useLocation } from 'react-router';
 
 import { type CSSProperties } from '@actual-app/components/styles';
 import { theme } from '@actual-app/components/theme';
@@ -8,7 +8,7 @@ import { tokens } from '@actual-app/components/tokens';
 import { View } from '@actual-app/components/view';
 import { css } from '@emotion/css';
 
-import { Link } from '../common/Link';
+import { Link } from '@desktop-client/components/common/Link';
 
 type SettingProps = {
   primaryAction?: ReactNode;
@@ -51,7 +51,6 @@ type AdvancedToggleProps = {
 };
 
 export const AdvancedToggle = ({ children }: AdvancedToggleProps) => {
-  const { t } = useTranslation();
   const location = useLocation();
   const [expanded, setExpanded] = useState(location.hash === '#advanced');
 
@@ -76,7 +75,7 @@ export const AdvancedToggle = ({ children }: AdvancedToggleProps) => {
       }}
     >
       <View style={{ fontSize: 20, fontWeight: 500, flexShrink: 0 }}>
-        {t('Advanced Settings')}
+        <Trans>Advanced Settings</Trans>
       </View>
       {children}
     </View>
@@ -92,7 +91,7 @@ export const AdvancedToggle = ({ children }: AdvancedToggleProps) => {
         marginBottom: 25,
       }}
     >
-      {t('Show advanced settings')}
+      <Trans>Show advanced settings</Trans>
     </Link>
   );
 };
